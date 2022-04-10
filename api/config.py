@@ -15,10 +15,10 @@ class Config:
 
 class DevConfig(Config):
     DEBUG = True
-    MONGODB_SETTINGS = {'host': 'mongodb',
-                        'db': 'flaskdb',
+    MONGODB_SETTINGS = {'host': 'localhost',
+                        'db': 'test',
                         'port': 27017,
-                        'username': 'user',
+                        'username': 'useradmin',
                         'password': 'password'}
 
 

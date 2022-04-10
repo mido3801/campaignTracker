@@ -1,182 +1,56 @@
-from flask_restful import Resource, Api
 from flask import Response, request
-from db import Character, Location, Item, Event, Quest
-
-api = Api()
-
-
-def init_route(route):
-    """Wrapper to associate our routes with api object as we define them"""
-    api.add_resource(route, route.path)
+from flask.views import MethodView
+import mongoengine as me
 
 
-@init_route
-class CharactersRoute(Resource):
-    path = '/api/characters'
+class Route(MethodView):
+    """Abstract object for simple routes"""
 
-    def get(self) -> Response:
-        characters = Character.objects().to_json()
-        return Response(characters, mimetype="application/json", status=200)
+    def __init__(self, model):
+        self.resource = model
+
+    def get(self, id):
+        if id is None:
+            objects = self.resource.objects().to_json()
+            return Response(objects, mimetype="application/json", status=200)
+
+        specified_object = self.resource.objects.get(id=id).to_json()
+        return Response(specified_object, mimetype="application/json", status=200)
 
     def post(self):
+        # Go through all fields in designated object model.
+        # If we have a field that is a reference field then we
+        # need to check if we are trying to associate any data with
+        # that field. If we are then we need to grab the actual objects
+        # that we are trying to associate with the id's that are included
+        # in the request body
         body = request.get_json()
-        character = Character(**body).save()
-        id = character.id
+        field_dict = self.resource._fields
+        for field_name, field in field_dict.items():
+
+            if isinstance(field, me.ReferenceField):
+                if field_name in body:
+                    reference_key = body[field_name]
+                    reference_object = field.document_type.objects.get(id=reference_key)
+                    body[field_name] = reference_object
+
+            elif isinstance(field, me.ListField):
+                if field_name in body:
+                    reference_keys = body[field_name]
+                    reference_objects = [field.field.document_type.objects.get(id=key) for key in reference_keys]
+                    body[field_name] = reference_objects
+
+        created_object = self.resource(**body).save()
+        id = created_object.id
         return {'id': str(id)}, 200
-
-
-@init_route
-class CharacterRoute(Resource):
-    path = '/api/characters/<id>'
-
-    def get(self, id) -> Response:
-        character = Character.objects.get(id=id).to_json()
-        return Response(character, mimetype="application/json", status=200)
 
     def put(self, id):
         body = request.get_json()
-        Character.objects.get(id=id).update(**body)
+        self.resource.objects.get(id=body['id']).update(**body)
         return '', 200
 
     def delete(self, id):
-        Character.objects.get(id=id).delete()
+        body = request.get_json()
+        self.resource.objects.get(id=body['id']).delete()
         return '', 200
 
-
-@init_route
-class LocationsRoute(Resource):
-    path = '/api/locations'
-
-    def get(self) -> Response:
-        locations = Location.objects().to_json()
-        return Response(locations, mimetype="application/json", status=200)
-
-    def post(self):
-        body = request.get_json()
-        location = Location(**body).save()
-        id = location.id
-        return {'id': str(id)}, 200
-
-
-@init_route
-class LocationRoute(Resource):
-    path = '/api/locations/<id>'
-
-    def get(self, id) -> Response:
-        location = Location.objects(id=id).to_json()
-        return Response(location, mimetype="application/json", status=200)
-
-    def put(self, id):
-        body = request.get_json()
-        Location.objects.get(id=id).update(**body)
-        return '', 200
-
-    def delete(self, id):
-        Location.objects.get(id=id).delete()
-        return '', 200
-
-
-@init_route
-class ItemsRoute(Resource):
-    path = '/api/items'
-
-    def get(self) -> Response:
-        items = Item.objects().to_json()
-        return Response(items, mimetype="application/json", status=200)
-
-    def post(self):
-        body = request.get_json()
-        item = Item(**body).save()
-        id = item.id
-        return {'id': str(id)}, 200
-
-
-@init_route
-class ItemRoute(Resource):
-    path = '/api/items/<id>'
-
-    def get(self) -> Response:
-        item = Item.objects(id=id).to_json()
-        return Response(item, mimetype="application/json", status=200)
-
-    def put(self):
-        body = request.get_json()
-        Item.objects.get(id=id).update(**body)
-        return {'id': str(id)}, 200
-
-    def delete(self):
-        Item.objects.get(id=id).delete()
-        return '', 200
-
-@init_route
-class EventsRoute(Resource):
-    path = '/api/events'
-
-    def get(self) -> Response:
-        events = Event.objects().to_json()
-        return Response(events, mimetype="application/json", status=200)
-
-    def post(self):
-        body = request.get_json()
-        event = Event(**body).save()
-        id = event.id
-        return {'id': str(id)}, 200
-
-
-@init_route
-class EventRoute(Resource):
-    path = '/api/eventd/<id>'
-
-    def get(self) -> Response:
-        event = Event.objects(id=id).to_json()
-        return Response(event, mimetype="application/json", status=200)
-
-    def put(self):
-        body = request.get_json()
-        Event.objects.get(id=id).update(**body)
-        return {'id': str(id)}, 200
-
-    def delete(self):
-        Event.objects.get(id=id).delete()
-        return '', 200
-
-
-@init_route
-class QuestsRoute(Resource):
-    path = '/api/quests'
-
-    def get(self) -> Response:
-        quests = Quest.objects().to_json()
-        return Response(quests, mimetype="application/json", status=200)
-
-    def post(self):
-        body = request.get_json()
-        quest = Quest(**body).save()
-        id = quest.id
-        return {'id': str(id)}, 200
-
-
-@init_route
-class QuestRoute(Resource):
-    path = '/api/quests/<id>'
-
-    def get(self) -> Response:
-        quest = Item.objects(id=id).to_json()
-        return Response(quest, mimetype="application/json", status=200)
-
-    def put(self):
-        body = request.get_json()
-        Quest.objects.get(id=id).update(**body)
-        return {'id': str(id)}, 200
-
-    def delete(self):
-        Quest.objects.get(id=id).delete()
-        return '', 200
-
-
-@init_route
-class TestRoute(Resource):
-    path = '/api/test'
-    def get(self):
-        return {'name': 'mike',
-                'about': 'this is a test'}

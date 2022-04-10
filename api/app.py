@@ -1,12 +1,18 @@
 from flask import Flask
 from flask_cors import CORS
 from flasgger import Swagger
+import os
 
-from db import db
+from db import db, Character, User, Quest, Event, Item, Location
 from config import env_config
-from flask_jwt_extended import JWTManager
-from datetime import timedelta
-from resources import api
+from resources import Route
+
+route_configs = [(Route(Character), Character, 'character_api', '/api/characters/'),
+                 (Route(Location), Location, 'location_api', '/api/locations/'),
+                 (Route(Item), Item, 'item_api', '/api/items/'),
+                 (Route(Event), Event, 'event_api', '/api/events/'),
+                 (Route(Quest), Quest, 'quest_api', '/api/quests/'),
+                 (Route(User), User, 'user_api', '/api/users/')]
 
 
 def create_app(config_name):
@@ -16,23 +22,26 @@ def create_app(config_name):
     """
     app = Flask(__name__)
     app.config.from_object(env_config[config_name])
-    app.config["JWT_SECRET_KEY"] = "please-remember-to-change-me"
-    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)
 
     # Initialize app extensions
     db.init_app(app)
-    api.init_app(app)
     CORS(app)
     Swagger(app)
-    JWTManager(app)
+
+    for config in route_configs:
+        register_route(app, *config)
 
     return app
 
 
-def deploy():
-    """
-    Run deployment tasks
-    """
-    app = create_app()
-    app.app_context().push()
+def register_route(app, view, model, endpoint, url, pk='id', pk_type='int'):
+    view_func = view.as_view(endpoint,model = model)
+    app.add_url_rule(url, defaults={pk: None},
+                     view_func=view_func, methods=['GET', 'PUT', 'DELETE'])
+    app.add_url_rule(url, view_func=view_func, methods=['POST',])
+    app.add_url_rule('%s<%s:%s>' % (url, pk_type, pk), view_func=view_func,
+                     methods=['GET'])
 
+
+if __name__ == '__main__':
+    app = create_app(os.getenv("FLASK_ENV"))
