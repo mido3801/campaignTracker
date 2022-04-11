@@ -13,25 +13,27 @@ class Route(MethodView):
         self.resource = model
 
     def get(self):
+        """How to handle GET requests being made to the route.
+           If an id is specified then we return the object
+           associated with that id. If no id provided then
+           all instances of the object are returned."""
         body = request.get_json()
-        id = body.get('id')
-        if id is None:
+        ref_id = body.get('id')
+        if ref_id is None:
             objects = self.resource.objects().to_json()
             return Response(objects,
                             mimetype="application/json",
                             status=200)
-        specified_object = self.resource.objects.get(id=body['id']).to_json()
+        specified_object = self.resource.objects.get(id=ref_id).to_json()
         return Response(specified_object,
                         mimetype="application/json",
                         status=200)
 
     def post(self):
-        # Go through all fields in designated object model.
-        # If we have a field that is a reference field then we
-        # need to check if we are trying to associate any data with
-        # that field. If we are then we need to grab the actual objects
-        # that we are trying to associate with the id's that are included
-        # in the request body
+        """Method for handling POST requests to the route.
+           For the designated object model we go through fields
+           and if there are any reference fields then we first
+           grab the objects specified in the request."""
         body = request.get_json()
         field_dict = self.resource._fields
         for field_name, field in field_dict.items():
@@ -51,15 +53,16 @@ class Route(MethodView):
                     body[field_name] = reference_objects
 
         created_object = self.resource(**body).save()
-        id = created_object.id
-        return {'id': str(id)}, 200
+        return {'id': str(created_object.id)}, 200
 
     def put(self):
+        """Method for handling PUT requests to the route"""
         body = request.get_json()
         self.resource.objects.get(id=body['id']).update(**body)
         return '', 200
 
     def delete(self):
+        """Method for handling DELETE methods to the route"""
         body = request.get_json()
         self.resource.objects.get(id=body['id']).delete()
         return '', 200

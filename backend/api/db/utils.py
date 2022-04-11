@@ -1,3 +1,4 @@
+"""Enums and utility functions for database"""
 from enum import Enum
 
 

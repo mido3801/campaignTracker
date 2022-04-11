@@ -1,3 +1,4 @@
+"""Tests for MongoEngine Document models"""
 import unittest
 from mongoengine import connect, disconnect
 from werkzeug.security import generate_password_hash
@@ -15,12 +16,14 @@ class TestItem(unittest.TestCase):
     def tearDownClass(cls) -> None:
         disconnect()
 
-    def test_item(self):
+    @staticmethod
+    def test_item():
+        """Test that when we save a new item in an empty database
+           the item returned by the database is what we expect"""
         item = Item(name='test_item',
                     weight=4.20,
                     description='this is a test item')
         item.save()
-
         fresh_item = Item.objects().first()
         assert fresh_item.name == 'test_item'
         assert fresh_item.weight == 4.20
@@ -37,7 +40,10 @@ class TestLocation(unittest.TestCase):
     def tearDownClass(cls) -> None:
         disconnect()
 
-    def test_location(self):
+    @staticmethod
+    def test_location():
+        """Test that when we save a new location in an empty database
+           the location returned by the database is what we expect"""
         location = Location(name='test_location',
                             description='this is a test location')
         location.save()
@@ -57,7 +63,10 @@ class TestCharacter(unittest.TestCase):
     def tearDownClass(cls) -> None:
         disconnect()
 
-    def test_character(self):
+    @staticmethod
+    def test_character():
+        """Test that when we save a new character in an empty database
+           the character returned by the database is what we expect"""
         test_item = Item(name='test_item')
         test_item.save()
         char = Character(name='test_char',
@@ -93,7 +102,10 @@ class TestEvent(unittest.TestCase):
     def tearDownClass(cls) -> None:
         disconnect()
 
-    def test_event(self):
+    @staticmethod
+    def test_event():
+        """Test that when we save a new event in an empty database
+           the event returned by the database is what we expect"""
         char = Character(name='test_char',
                          strength=10,
                          constitution=10,
@@ -132,7 +144,10 @@ class TestQuest(unittest.TestCase):
     def tearDownClass(cls) -> None:
         disconnect()
 
-    def test_quest(self):
+    @staticmethod
+    def test_quest():
+        """Test that when we save a new quest in an empty database
+           the quest returned by the database is what we expect"""
         char = Character(name='test_char',
                          strength=10,
                          constitution=10,
@@ -164,7 +179,10 @@ class TestUser(unittest.TestCase):
     def tearDownClass(cls) -> None:
         disconnect()
 
-    def test_user(self):
+    @staticmethod
+    def test_user():
+        """Test that when we save a new user in an empty database
+           the user returned by the database is what we expect"""
         user = User(username='user',
                     password=generate_password_hash('password'))
         user.save()
