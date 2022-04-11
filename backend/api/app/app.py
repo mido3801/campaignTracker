@@ -51,8 +51,12 @@ def register_route(app_object, view, model, endpoint, url):
        :param str url: resource url
     """
     view_func = view.as_view(endpoint, model=model)
-    app_object.add_url_rule(url, view_func=view_func, methods=['GET', 'PUT', 'DELETE'])
-    app_object.add_url_rule(url, view_func=view_func, methods=['POST'])
+    app_object.add_url_rule(url,
+                            view_func=view_func,
+                            methods=['GET', 'PUT', 'DELETE'])
+    app_object.add_url_rule(url,
+                            view_func=view_func,
+                            methods=['POST'])
 
 
 if __name__ == '__main__':
