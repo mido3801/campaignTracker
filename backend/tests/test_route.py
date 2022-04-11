@@ -4,6 +4,7 @@ from api.app.app import register_route
 from api.routes.route import Route
 import mongoengine as me
 from flask_mongoengine import MongoEngine
+from mongomock import MongoClient
 
 
 class MockObject(me.Document):
@@ -15,13 +16,9 @@ def app():
     app = Flask(__name__)
     MongoEngine(app)
     app.config.update({
-        "TESTING": True,
-        "MONGODB_SETTINGS": {'host': 'mongomock://localhost',
-                             'db': 'mongoenginetest',
-                             'port': 27017,
-                             'username': 'useradmin',
-                             'password': 'password'}
+        "TESTING": True
     })
+    app.db = MongoClient()
     register_route(app,
                    Route(MockObject),
                    MockObject,
