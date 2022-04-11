@@ -9,10 +9,11 @@ from flask_mongoengine import MongoEngine
 class MockObject(me.Document):
     field = me.StringField()
 
+
 @pytest.fixture()
 def app():
     app = Flask(__name__)
-    db = MongoEngine(app)
+    MongoEngine(app)
     app.config.update({
         "TESTING": True,
         "MONGODB_SETTINGS": {'host': 'mongomock://localhost',
@@ -21,8 +22,13 @@ def app():
                              'username': 'useradmin',
                              'password': 'password'}
     })
-    register_route(app, Route(MockObject), MockObject, 'mock_api', '/api/mock/')
+    register_route(app,
+                   Route(MockObject),
+                   MockObject,
+                   'mock_api',
+                   '/api/mock/')
     yield app
+
 
 @pytest.fixture()
 def client(app):
@@ -36,4 +42,4 @@ def test_empty_items(client):
 
 
 def test_get_item(client):
-    mock_item =
+    pass

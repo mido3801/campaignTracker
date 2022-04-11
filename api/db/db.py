@@ -29,12 +29,14 @@ class Character(db.Document):
     intelligence = db.IntField(required=True, default=lambda: stat_roll())
     charisma = db.IntField(required=True, default=lambda: stat_roll())
     hp = db.IntField(required=True, default=lambda: stat_roll())
-    inventory = db.ListField(me.ReferenceField(Item, reverse_delete_rule=me.PULL))
+    inventory = db.ListField(me.ReferenceField(Item,
+                                               reverse_delete_rule=me.PULL))
 
 
 class Event(db.Document):
     """Model for narrative event"""
-    characters = db.ListField(db.ReferenceField(Character, reverse_delete_rule=me.PULL))
+    characters = db.ListField(db.ReferenceField(Character,
+                                                reverse_delete_rule=me.PULL))
     location = db.ReferenceField(Location, reverse_delete_rule=me.PULL)
     items = db.ReferenceField(Item, reverse_delete_rule=me.PULL)
     description = db.StringField()
@@ -64,6 +66,6 @@ def stat_roll():
     4d6, take highest 3
     :return int: sum of highest 3 rolls
     """
-    rolls = [randint(1,7) for x in range(4)]
+    rolls = [randint(1, 7) for x in range(4)]
     rolls.sort()
     return sum(rolls[1:])

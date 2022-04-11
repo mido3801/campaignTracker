@@ -7,12 +7,18 @@ from api.db.db import db, Character, User, Quest, Event, Item, Location
 from api.config import env_config
 from api.routes.route import Route
 
-route_configs = [(Route(Character), Character, 'character_api', '/api/characters/'),
-                 (Route(Location), Location, 'location_api', '/api/locations/'),
-                 (Route(Item), Item, 'item_api', '/api/items/'),
-                 (Route(Event), Event, 'event_api', '/api/events/'),
-                 (Route(Quest), Quest, 'quest_api', '/api/quests/'),
-                 (Route(User), User, 'user_api', '/api/users/')]
+route_configs = [(Route(Character), Character,
+                  'character_api', '/api/characters/'),
+                 (Route(Location), Location,
+                  'location_api', '/api/locations/'),
+                 (Route(Item), Item,
+                  'item_api', '/api/items/'),
+                 (Route(Event), Event,
+                  'event_api', '/api/events/'),
+                 (Route(Quest), Quest,
+                  'quest_api', '/api/quests/'),
+                 (Route(User), User,
+                  'user_api', '/api/users/')]
 
 
 def create_app(config_name):
@@ -35,10 +41,10 @@ def create_app(config_name):
 
 
 def register_route(app, view, model, endpoint, url, pk='id', pk_type='int'):
-    view_func = view.as_view(endpoint,model = model)
+    view_func = view.as_view(endpoint, model=model)
     app.add_url_rule(url, defaults={pk: None},
                      view_func=view_func, methods=['GET', 'PUT', 'DELETE'])
-    app.add_url_rule(url, view_func=view_func, methods=['POST',])
+    app.add_url_rule(url, view_func=view_func, methods=['POST'])
     app.add_url_rule('%s<%s:%s>' % (url, pk_type, pk), view_func=view_func,
                      methods=['GET'])
 

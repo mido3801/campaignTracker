@@ -1,6 +1,6 @@
 import unittest
 from mongoengine import connect, disconnect
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash
 from api.db.db import Item, Character, Quest, Event, Location, User
 
 
@@ -16,7 +16,9 @@ class TestItem(unittest.TestCase):
         disconnect()
 
     def test_item(self):
-        item = Item(name='test_item', weight=4.20, description='this is a test item')
+        item = Item(name='test_item',
+                    weight=4.20,
+                    description='this is a test item')
         item.save()
 
         fresh_item = Item.objects().first()
@@ -36,7 +38,8 @@ class TestLocation(unittest.TestCase):
         disconnect()
 
     def test_location(self):
-        location = Location(name='test_location', description='this is a test location')
+        location = Location(name='test_location',
+                            description='this is a test location')
         location.save()
 
         fresh_location = Location.objects().first()

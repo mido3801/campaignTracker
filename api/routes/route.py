@@ -12,10 +12,14 @@ class Route(MethodView):
     def get(self, id):
         if id is None:
             objects = self.resource.objects().to_json()
-            return Response(objects, mimetype="application/json", status=200)
+            return Response(objects,
+                            mimetype="application/json",
+                            status=200)
 
         specified_object = self.resource.objects.get(id=id).to_json()
-        return Response(specified_object, mimetype="application/json", status=200)
+        return Response(specified_object,
+                        mimetype="application/json",
+                        status=200)
 
     def post(self):
         # Go through all fields in designated object model.
@@ -31,13 +35,15 @@ class Route(MethodView):
             if isinstance(field, me.ReferenceField):
                 if field_name in body:
                     reference_key = body[field_name]
-                    reference_object = field.document_type.objects.get(id=reference_key)
+                    reference_object = field.document_type.objects.\
+                        get(id=reference_key)
                     body[field_name] = reference_object
 
             elif isinstance(field, me.ListField):
                 if field_name in body:
                     reference_keys = body[field_name]
-                    reference_objects = [field.field.document_type.objects.get(id=key) for key in reference_keys]
+                    reference_objects = [field.field.document_type.objects.
+                                         get(id=key) for key in reference_keys]
                     body[field_name] = reference_objects
 
         created_object = self.resource(**body).save()
@@ -53,4 +59,3 @@ class Route(MethodView):
         body = request.get_json()
         self.resource.objects.get(id=body['id']).delete()
         return '', 200
-
