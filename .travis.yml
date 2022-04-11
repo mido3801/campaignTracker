@@ -5,5 +5,7 @@ dist: xenial
 
 language: python
 
+install: backend/requirements.txt
+
 script:
-  - python pytest
+  - cd backend && python pytest
