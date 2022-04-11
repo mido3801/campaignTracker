@@ -1,3 +1,5 @@
+import unittest.mock
+
 import pytest
 from flask import Flask
 from api.app.app import register_route
@@ -14,11 +16,12 @@ class MockObject(me.Document):
 @pytest.fixture()
 def app():
     app = Flask(__name__)
-    MongoEngine(app)
+    #MongoEngine(app)
     app.config.update({
         "TESTING": True
     })
     app.db = MongoClient()
+    me.connect('mongoenginetest', host='mongomock://localhost')
     register_route(app,
                    Route(MockObject),
                    MockObject,
@@ -33,8 +36,8 @@ def client(app):
 
 
 def test_empty_items(client):
-    response = client.get('/backend/mock/', json={})
-    print(response.data)
+    with unittest.mock.patch('flask_mongoengine.MongoEngine') as mock_db:
+        response = client.get('/backend/mock/', json={})
     assert response.data == b'[]'
 
 
