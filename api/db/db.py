@@ -34,16 +34,17 @@ class Character(db.Document):
 
 class Event(db.Document):
     """Model for narrative event"""
-    event_characters = me.ReferenceField(Character, reverse_delete_rule=me.PULL)
-    event_location = me.ReferenceField(Location, reverse_delete_rule=me.PULL)
-    event_items = me.ReferenceField(Item, reverse_delete_rule=me.PULL)
+    characters = db.ListField(db.ReferenceField(Character, reverse_delete_rule=me.PULL))
+    location = db.ReferenceField(Location, reverse_delete_rule=me.PULL)
+    items = db.ReferenceField(Item, reverse_delete_rule=me.PULL)
+    description = db.StringField()
 
 
 class Quest(db.Document):
     """Model for quests"""
-    character = me.ReferenceField(Character, reverse_delete_rule=me.PULL)
-    goal = me.StringField()
-    failure_conditions = me.StringField()
+    character = db.ReferenceField(Character, reverse_delete_rule=me.PULL)
+    goal = db.StringField()
+    failure_conditions = db.StringField()
 
 
 class User(db.Document):
@@ -56,11 +57,6 @@ class User(db.Document):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
-    def check_jwt_auth_active(self):
-        return self.jwt_auth_active
-
-    def set_jwt_auth_active(self, set_status):
-        self.jwt_auth_active = set_status
 
 def stat_roll():
     """
