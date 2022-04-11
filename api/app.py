@@ -1,7 +1,9 @@
+"""Module with app factory function"""
+
+import os
 from flask import Flask
 from flask_cors import CORS
 from flasgger import Swagger
-import os
 
 from api.db.db import db, Character, User, Quest, Event, Item, Location
 from api.config import env_config
@@ -26,27 +28,31 @@ def create_app(config_name):
     Application factory pattern
     :return: flask app object
     """
-    app = Flask(__name__)
-    app.config.from_object(env_config[config_name])
+    flask_app = Flask(__name__)
+    flask_app.config.from_object(env_config[config_name])
 
     # Initialize app extensions
-    db.init_app(app)
-    CORS(app)
-    Swagger(app)
+    db.init_app(flask_app)
+    CORS(flask_app)
+    Swagger(flask_app)
 
     for config in route_configs:
-        register_route(app, *config)
+        register_route(flask_app, *config)
 
-    return app
+    return flask_app
 
 
-def register_route(app, view, model, endpoint, url, pk='id', pk_type='int'):
+def register_route(app_object, view, model, endpoint, url):
+    """Register a MethodView route object with a flask app
+       :param flask.Flask app_object: Flask application object
+       :param flask.views.MethodView: MethodView object
+       :param MongoEngine.Document model: MongoEngine Document model
+       :param str endpoint: api endpoint name
+       :param str url: resource url
+    """
     view_func = view.as_view(endpoint, model=model)
-    app.add_url_rule(url, defaults={pk: None},
-                     view_func=view_func, methods=['GET', 'PUT', 'DELETE'])
-    app.add_url_rule(url, view_func=view_func, methods=['POST'])
-    app.add_url_rule('%s<%s:%s>' % (url, pk_type, pk), view_func=view_func,
-                     methods=['GET'])
+    app_object.add_url_rule(url, view_func=view_func, methods=['GET', 'PUT', 'DELETE'])
+    app_object.add_url_rule(url, view_func=view_func, methods=['POST'])
 
 
 if __name__ == '__main__':

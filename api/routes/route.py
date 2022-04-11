@@ -1,3 +1,5 @@
+"""Contains abstract Route object to be used for CRUD operations on varying
+   MongoDB document models"""
 from flask import Response, request
 from flask.views import MethodView
 import mongoengine as me
@@ -7,16 +9,18 @@ class Route(MethodView):
     """Abstract object for simple routes"""
 
     def __init__(self, model):
+        """Set provided model"""
         self.resource = model
 
-    def get(self, id):
+    def get(self):
+        body = request.get_json()
+        id = body.get('id')
         if id is None:
             objects = self.resource.objects().to_json()
             return Response(objects,
                             mimetype="application/json",
                             status=200)
-
-        specified_object = self.resource.objects.get(id=id).to_json()
+        specified_object = self.resource.objects.get(id=body['id']).to_json()
         return Response(specified_object,
                         mimetype="application/json",
                         status=200)
@@ -50,12 +54,12 @@ class Route(MethodView):
         id = created_object.id
         return {'id': str(id)}, 200
 
-    def put(self, id):
+    def put(self):
         body = request.get_json()
         self.resource.objects.get(id=body['id']).update(**body)
         return '', 200
 
-    def delete(self, id):
+    def delete(self):
         body = request.get_json()
         self.resource.objects.get(id=body['id']).delete()
         return '', 200
