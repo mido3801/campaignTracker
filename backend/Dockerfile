@@ -4,7 +4,7 @@ WORKDIR /app
 COPY . ./
 RUN pip install -r ./requirements.txt
 ENV FLASK_ENV=development
-ENV FLASK_APP=app
+ENV FLASK_APP=main
 
 EXPOSE 5000
 CMD ["flask", "run", "--host=0.0.0.0"]

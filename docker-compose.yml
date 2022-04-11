@@ -17,9 +17,9 @@ services:
       - backend
   api:
     build:
-      context: api/
-      dockerfile: api/Dockerfile
-    container_name: flask-api
+      context: backend/
+      dockerfile: backend/Dockerfile
+    container_name: flask-backend
     image: react-flask-app-api
     restart: unless-stopped
     environment:

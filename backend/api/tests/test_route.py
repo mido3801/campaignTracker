@@ -1,6 +1,6 @@
 import pytest
 from flask import Flask
-from api.app import register_route
+from api.app.app import register_route
 from api.routes.route import Route
 import mongoengine as me
 from flask_mongoengine import MongoEngine
@@ -26,7 +26,7 @@ def app():
                    Route(MockObject),
                    MockObject,
                    'mock_api',
-                   '/api/mock/')
+                   '/backend/mock/')
     yield app
 
 
@@ -36,7 +36,7 @@ def client(app):
 
 
 def test_empty_items(client):
-    response = client.get('/api/mock/')
+    response = client.get('/backend/mock/')
     print(response.data)
     assert response.data == b'[]'
 

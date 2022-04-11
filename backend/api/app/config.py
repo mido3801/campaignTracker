@@ -12,8 +12,8 @@ class Config:
 class DevConfig(Config):
     """Config settings to use for development"""
     DEBUG = True
-    MONGODB_SETTINGS = {'host': 'localhost',
-                        'db': 'test',
+    MONGODB_SETTINGS = {'host': 'mongodb',
+                        'db': 'flaskdb',
                         'port': 27017,
                         'username': 'useradmin',
                         'password': 'password'}

@@ -5,9 +5,9 @@ from flask import Flask
 from flask_cors import CORS
 from flasgger import Swagger
 
-from api.db.db import db, Character, User, Quest, Event, Item, Location
-from api.config import env_config
-from api.routes.route import Route
+from ..db.db import db, Character, User, Quest, Event, Item, Location
+from ..app.config import env_config
+from ..routes.route import Route
 
 route_configs = [(Route(Character), Character,
                   'character_api', '/api/characters/'),
@@ -47,7 +47,7 @@ def register_route(app_object, view, model, endpoint, url):
        :param flask.Flask app_object: Flask application object
        :param flask.views.MethodView: MethodView object
        :param MongoEngine.Document model: MongoEngine Document model
-       :param str endpoint: api endpoint name
+       :param str endpoint: backend endpoint name
        :param str url: resource url
     """
     view_func = view.as_view(endpoint, model=model)
