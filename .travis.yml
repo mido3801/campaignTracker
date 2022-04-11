@@ -10,4 +10,5 @@ python:
 install: pip install -r backend/requirements.txt
 
 script:
-  - cd backend && python pytest
+  - cd backend
+  - pytest
