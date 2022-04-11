@@ -5,9 +5,9 @@ from flask import Flask
 from flask_cors import CORS
 from flasgger import Swagger
 
-from ..db.db import db, Character, User, Quest, Event, Item, Location
-from ..app.config import env_config
-from ..routes.route import Route
+from api.db.db import db, Character, User, Quest, Event, Item, Location
+from api.app.config import env_config
+from api.routes.route import Route
 
 route_configs = [(Route(Character), Character,
                   'character_api', '/api/characters/'),
