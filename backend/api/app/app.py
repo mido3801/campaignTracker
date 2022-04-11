@@ -1,6 +1,5 @@
 """Module with app factory function"""
 
-import os
 from flask import Flask
 from flask_cors import CORS
 from flasgger import Swagger
