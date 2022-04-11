@@ -36,7 +36,7 @@ def client(app):
 
 
 def test_empty_items(client):
-    response = client.get('/backend/mock/')
+    response = client.get('/backend/mock/', json={})
     print(response.data)
     assert response.data == b'[]'
 
