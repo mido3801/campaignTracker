@@ -45,7 +45,7 @@ def create_app(config_name):
 def register_route(app_object, view, model, endpoint, url):
     """Register a MethodView route object with a flask app
        :param flask.Flask app_object: Flask application object
-       :param flask.views.MethodView: MethodView object
+       :param flask.views.MethodView view: MethodView object
        :param MongoEngine.Document model: MongoEngine Document model
        :param str endpoint: backend endpoint name
        :param str url: resource url
@@ -57,7 +57,3 @@ def register_route(app_object, view, model, endpoint, url):
     app_object.add_url_rule(url,
                             view_func=view_func,
                             methods=['POST'])
-
-
-if __name__ == '__main__':
-    app = create_app(os.getenv("FLASK_ENV"))

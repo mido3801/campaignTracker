@@ -5,7 +5,6 @@ from flask import Flask
 from api.app.app import register_route
 from api.routes.route import Route
 import mongoengine as me
-from flask_mongoengine import MongoEngine
 from mongomock import MongoClient
 
 
@@ -35,8 +34,7 @@ def client(app):
 
 
 def test_empty_items(client):
-    with unittest.mock.patch('flask_mongoengine.MongoEngine') as mock_db:
-        response = client.get('/backend/mock/', json={})
+    response = client.get('/backend/mock/', json={})
     assert response.data == b'[]'
 
 
