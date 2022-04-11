@@ -16,7 +16,6 @@ class MockObject(me.Document):
 @pytest.fixture()
 def app():
     app = Flask(__name__)
-    #MongoEngine(app)
     app.config.update({
         "TESTING": True
     })
