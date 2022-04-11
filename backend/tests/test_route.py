@@ -1,4 +1,3 @@
-
 import pytest
 from flask import Flask
 from api.app.app import register_route
